@@ -110,8 +110,8 @@ public class NumberPickerView extends View {
     private int mMarginEndOfHint = 0;
     private int mItemPaddingVertical = 0;
     private int mItemPaddingHorizontal = 0;
-    private int mDividerColor = DEFAULT_DIVIDER_COLOR;
-    private int mDividerHeight = DEFAULT_DIVIDER_HEIGHT;
+    private int mDividerColor = DEFAULT_DIVIDER_COLOR; //两条divider的颜色
+    private int mDividerHeight = DEFAULT_DIVIDER_HEIGHT; //divider的高度
     private int mDividerMarginL = DEFAULT_DIVIDER_MARGIN_HORIZONTAL;
     private int mDividerMarginR = DEFAULT_DIVIDER_MARGIN_HORIZONTAL;
     private int mShownCount = DEFAULT_SHOWN_COUNT;
@@ -236,7 +236,7 @@ public class NumberPickerView extends View {
             return;
         }
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.NumberPickerView);
-        int n = a.getIndexCount();
+        int n = a.getIndexCount(); //获取attr数量？
         for (int i = 0; i < n; i++) {
             int attr = a.getIndex(i);
             if (attr == R.styleable.NumberPickerView_npv_ShownCount) {
@@ -302,7 +302,9 @@ public class NumberPickerView extends View {
 
     private void init(Context context) {
         mScroller = new Scroller(context);
+        // Minimum velocity to initiate a fling, as measured in pixels per second
         mMiniVelocityFling = ViewConfiguration.get(getContext()).getScaledMinimumFlingVelocity();
+        // Distance in pixels a touch can wander before we think the user is scrolling
         mScaledTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
         if (mTextSizeNormal == 0) {
             mTextSizeNormal = sp2px(context, DEFAULT_TEXT_SIZE_NORMAL_SP);
@@ -343,6 +345,7 @@ public class NumberPickerView extends View {
     }
 
     private void initHandler() {
+        //HandlerThread是Thread的子类，它有一个Looper，这个Looper可以用来创建Handler
         mHandlerThread = new HandlerThread("HandlerThread-For-Refreshing");
         mHandlerThread.start();
 
@@ -431,7 +434,7 @@ public class NumberPickerView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         mViewWidth = w;
         mViewHeight = h;
-        mItemHeight = mViewHeight / mShownCount;
+        mItemHeight = mViewHeight / mShownCount; // 每个Item的高度
         mViewCenterX = ((float) (mViewWidth + getPaddingLeft() - getPaddingRight())) / 2;
         int defaultValue = 0;
         if (getOneRecycleSize() > 1) {
@@ -549,7 +552,7 @@ public class NumberPickerView extends View {
                     + ", you need to set MaxValue and MinValue before setDisplayedValues(String[])");
         }
         updateContent(newDisplayedValues);
-        updateMaxWHOfDisplayedValues(true);
+        updateMaxWHOfDisplayedValues(true); //更新数据了
         mPrevPickedIndex = 0 + mMinShowIndex;
         correctPositionByDefaultValue(0, mWrapSelectorWheel && mWrapSelectorWheelCheck);
         postInvalidate();
@@ -995,7 +998,7 @@ public class NumberPickerView extends View {
         postInvalidate();
     }
 
-    private void updateDividerAttr() {
+    private void updateDividerAttr() { //分割线属性
         mDividerIndex0 = mShownCount / 2;
         mDividerIndex1 = mDividerIndex0 + 1;
         dividerY0 = mDividerIndex0 * mViewHeight / mShownCount;
@@ -1234,8 +1237,8 @@ public class NumberPickerView extends View {
     }
 
     private void updateMaxWHOfDisplayedValues(boolean needRequestLayout) {
-        updateMaxWidthOfDisplayedValues();
-        updateMaxHeightOfDisplayedValues();
+        updateMaxWidthOfDisplayedValues(); //最大的宽度
+        updateMaxHeightOfDisplayedValues(); //高度
         if (needRequestLayout &&
                 (mSpecModeW == MeasureSpec.AT_MOST || mSpecModeH == MeasureSpec.AT_MOST)) {
             mHandlerInMainThread.sendEmptyMessage(HANDLER_WHAT_REQUEST_LAYOUT);
@@ -1260,7 +1263,7 @@ public class NumberPickerView extends View {
                     Math.max(mMaxWidthOfDisplayedValues, mMaxWidthOfAlterArrayWithoutMeasureHint)
                             + 2 * (gapOfHint + Math.max(mWidthOfHintText, mWidthOfAlterHint) + marginOfHint + 2 * mItemPaddingHorizontal));
             result = this.getPaddingLeft() + this.getPaddingRight() + maxWidth;//MeasureSpec.UNSPECIFIED
-            if (specMode == MeasureSpec.AT_MOST) {
+            if (specMode == MeasureSpec.AT_MOST) { //wrap_content
                 result = Math.min(result, specSize);
             }
         }
@@ -1377,6 +1380,7 @@ public class NumberPickerView extends View {
         mPaintText.setTextSize(savedTextSize);
     }
 
+    // 获取所有要显示的所有字符串的最大宽度，由paint计算而来
     private int getMaxWidthOfTextArray(CharSequence[] array, Paint paint) {
         if (array == null) {
             return 0;
@@ -1397,6 +1401,7 @@ public class NumberPickerView extends View {
         }
         String key = text.toString();
 
+        // 缓存的值
         if (mTextWidthCache.containsKey(key)) {
             Integer integer = mTextWidthCache.get(key);
             if (integer != null) {
